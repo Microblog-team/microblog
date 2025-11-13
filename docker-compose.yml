@@ -1,30 +1,39 @@
 services:
-  db:
+  mysql:
     image: mysql:8.0
-    container_name: microblog_db
+    container_name: microblog_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: microblog
-      MYSQL_USER: microblog
-      MYSQL_PASSWORD: mbpass
+      MYSQL_USER: microbloguser
+      MYSQL_PASSWORD: microblogpass
+    command: --default-authentication-plugin=mysql_native_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
+      timeout: 20s
       retries: 10
 
   prod:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile_prod
     container_name: microblog_prod
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
-      DATABASE_URL: "mysql+pymysql://microblog:mbpass@db:3306/microblog"
-      FLASK_APP: "app"
-      FLASK_ENV: "production"
+      DATABASE_URL: mysql+pymysql://microbloguser:microblogpass@mysql:3306/microblog
+      SECRET_KEY: devops-microblog-secret-key-123
+      FLASK_APP: app
+      FLASK_ENV: production
     ports:
-      - "8000:8000"
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: >
+      sh -c "flask db upgrade && flask run --host=0.0.0.0"
+
+volumes:
+  mysql_data:

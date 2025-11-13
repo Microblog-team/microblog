@@ -1,0 +1,13 @@
+# Commit Message Format
+# <type>: <description>
+#
+# Available types:
+# feat:     New feature
+# fix:      Bug fix
+# docs:     Documentation changes
+# style:    Code style changes
+# refactor: Code refactoring
+# test:     Adding tests
+# chore:    Maintenance tasks
+#
+# Example: feat: add docker configuration
