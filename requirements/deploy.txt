@@ -1,5 +1,5 @@
-boto >= 2.49.0
-boto3 >= 1.9.203
-ansible == 4.8.0
--r https://raw.githubusercontent.com/ansible-collections/azure/refs/tags/v3.0.0/requirements.txt
-PyMySQL >= 0.9.3
+# -r https://raw.githubusercontent.com/ansible-collections/azure/36d034034bbc9bb1e83007d2a643d4a1af2f8776/requirements.txt
+boto
+boto3
+ansible
+PyMySQL
