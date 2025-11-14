@@ -3,9 +3,9 @@ name: Continuous Integration
 on:
   workflow_call:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build-and-test:
