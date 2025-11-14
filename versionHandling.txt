@@ -1,0 +1,14 @@
+1. MAJOR + with 1, when changing backward-compatible.
+2. MINOR + with 1, when adding new functionality.
+3. PATCH + with 1, when fixing bugs.
+MAJOR.MINOR.PATCH
+
+1.0.0 -> first realse
+
+1.0.1 -> Bugfix
+
+1.1.0 -> New functionality
+
+2.0.0 -> Larger changes 
+
+version 1.0.0 ->fix a bug ->1.0.1
