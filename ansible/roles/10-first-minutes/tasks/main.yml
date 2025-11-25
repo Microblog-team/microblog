@@ -35,14 +35,22 @@
         state: present
         shell: /bin/bash
         groups: "{{ server_user_groups }}"
-
--   name: Add ssh-key for new user
+        
+-   name: Add ssh-key for new user (from local file)
     authorized_key:
         user: "{{ server_user }}"
         state: present
         key: "{{ lookup('file', item) }}"
     with_items: "{{ pub_ssh_key_location }}"
+    when: pub_ssh_key_location is defined
 
+-   name: Add ssh-keys for all team members (from GitHub)
+    authorized_key:
+        user: "{{ server_user }}"
+        state: present
+        key: "https://github.com/{{ item }}.keys"
+    with_items: "{{ github_users }}"
+    when: github_users is defined
 
 -   name: Add user to sudoers
     lineinfile:

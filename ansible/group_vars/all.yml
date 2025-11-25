@@ -19,3 +19,9 @@ server_user: "deploy"
 server_user_pass: "<a password>" # change me
 server_user_groups:
     -   sudo
+
+# GitHub usernames for teammembers
+github_users:
+    - vinkeln
+    - jacobLandefjall
+    - kamhaal

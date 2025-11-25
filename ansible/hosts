@@ -1,2 +1,17 @@
+# Ansible Hosts File
+# Note: Needing a domain name? automatic domain name.
 [local]
 localhost ansible_connection=local
+
+[web_servers]
+appserver1
+appserver2
+
+[load_balancers]
+loadbalancer
+
+[db_servers]
+database
+
+[all_app_servers:children]
+web_servers
