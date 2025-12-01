@@ -4,8 +4,7 @@ ansible_python_interpreter: "python3"
 
 region: northeurope
 resource_group: DIDA-LICH23-DV1673-H25-LP2
-domain_name: devopsteam.me # temporary domain name change me
-
+domain_name: microblog-projekt.se
 admin_email: lich23@student.bth.se
 
 vmtags:
