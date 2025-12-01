@@ -1,6 +1,6 @@
 ---
 -   name: Create public IP address
-    azure_rm_publicipaddress:
+    azure.azcollection.azure_rm_publicipaddress:
         resource_group: "{{ resource_group }}"
         allocation_method: Static
         name: "{{ iname }}-ip"
@@ -13,7 +13,7 @@
         msg: "The public IP is {{ output_ip_address.state.ip_address }}."
 
 -   name: Create virtual network interface card
-    azure_rm_networkinterface:
+    azure.azcollection.azure_rm_networkinterface:
         resource_group: "{{ resource_group }}"
         name: "{{ iname }}-NIC"
         virtual_network: "microblog-Vnet"
@@ -25,7 +25,7 @@
         tags: "{{ vmtags }}"
 
 -   name: Ensure "A" records for loadbalancer
-    azure_rm_dnsrecordset:
+    azure.azcollection.azure_rm_dnsrecordset:
         resource_group: "{{ resource_group }}"
         relative_name: "{{ relative_name.name }}"
         zone_name: "{{ domain_name }}"
@@ -42,7 +42,7 @@
 
 
 -   name: Create VM
-    azure_rm_virtualmachine:
+    azure.azcollection.azure_rm_virtualmachine:
         resource_group: "{{ resource_group }}"
         name: "{{ iname }}-VM"
         admin_username: "{{ root_user }}"
@@ -55,9 +55,9 @@
         managed_disk_type: Standard_LRS
         os_disk_size_gb: 30
         image:
-            offer: Debian-10
+            offer: debian-11
             publisher: Debian
-            sku: 10
+            sku: 11
             version: latest
         tags:
             StudentId: "{{ vmtags.StudentId }}"
