@@ -52,6 +52,13 @@
     with_items: "{{ github_users }}"
     when: github_users is defined
 
+- name: Set ssh keys for regular users from GitHub
+  authorized_key:
+    user: "{{ item.user }}"
+    key: "https://github.com/{{ item.github }}.keys"
+    exclusive: yes
+  loop: "{{ users_to_add }}"
+
 -   name: Add user to sudoers
     lineinfile:
         dest: /etc/sudoers
