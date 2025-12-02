@@ -1,5 +1,6 @@
-boto >= 2.49.0
-boto3 >= 1.9.203
-ansible == 4.8.0
--r https://raw.githubusercontent.com/ansible-collections/azure/refs/tags/v3.0.0/requirements.txt
-PyMySQL >= 0.9.3
+ansible==11.11.0 # python3.11
+ansible-core==2.18.10 # Någon gång installerades fel, därför sätter jag den. Ska inte behövas
+setuptools # distutils är inte en del av standardlibrary längre utan behöver installeras via setuptools
+boto
+boto3
+PyMySQL
