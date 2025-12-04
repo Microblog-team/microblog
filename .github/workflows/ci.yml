@@ -1,0 +1,52 @@
+name: Continuous Integration
+
+on:
+  workflow_call:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: microblog_test
+          MYSQL_USER: microblog
+          MYSQL_PASSWORD: microblogpass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m venv .venv
+        .venv/bin/pip install --upgrade pip
+        .venv/bin/pip install -r requirements/test.txt
+
+    - name: Wait for MySQL to be ready
+      run: |
+        until mysqladmin ping -h "127.0.0.1" -u"microblog" -p"microblogpass" --silent; do
+          echo "Waiting for database..."
+          sleep 2
+        done
+
+    - name: Run tests
+      run: .venv/bin/pytest -v
