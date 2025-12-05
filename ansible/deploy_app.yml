@@ -2,6 +2,7 @@
 - hosts: web_servers
   become: true
   remote_user: deploy
+  serial: 1
 
   roles:
     - docker

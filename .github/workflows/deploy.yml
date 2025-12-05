@@ -1,0 +1,32 @@
+name: Deploy to Production
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 13.79.234.236 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 52.178.214.74 >> ~/.ssh/known_hosts
+
+      - name: Run Playbook
+        run: |
+          cd ansible
+          ansible-playbook -i hosts -u deploy deploy_app.yml
