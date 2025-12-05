@@ -1,0 +1,8 @@
+---
+- hosts: web_servers
+  become: true
+  remote_user: deploy
+
+  roles:
+    - docker
+    - deploy_app

@@ -8,7 +8,7 @@
       - gnupg            # Verify signatures
       - lsb-release      # Get Debian version info
     state: present
-    update_cache: yes
+    # update_cache: yes
 
 # Add Docker's official GPG key
 - name: Add Docker's official GPG key

@@ -1,0 +1,39 @@
+---
+- name: Install MySQL and dependencies
+  apt:
+    name:
+      - mariadb-server
+      - python3-pymysql  
+    state: present
+
+- name: Start MySQL service
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Create database 'microblog'
+  community.mysql.mysql_db:
+    name: microblog
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create database user
+  community.mysql.mysql_user:
+    name: microblog
+    password: "hemligt_losenord"
+    priv: 'microblog.*:ALL'
+    host: '%'                      
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Allow remote connections (bind-address)
+  lineinfile:
+    path: /etc/mysql/mariadb.conf.d/50-server.cnf
+    line: 'bind-address = 0.0.0.0'
+
+
+- name: Restart MySQL manually (to apply bind-address)
+  service:
+    name: mysql
+    state: restarted
