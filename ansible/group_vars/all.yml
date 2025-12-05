@@ -24,3 +24,11 @@ github_users:
     - vinkeln
     - jacobLandefjall
     - kamhaal
+
+# MySQL Configuration
+# Use ansible-valult instead?
+mysql_root_password: hz/Vlw9d2Iv3izQpWV4I4J/QsW/YTNoYahJDBw4UgVI= 
+mysql_password: 6wNVw1QyOlVfk+90XJZ2332NxdbXYv5SOHHRkyUghZM=
+
+# ansible SSH Configuration
+ansible_user: deploy
