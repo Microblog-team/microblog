@@ -1,0 +1,62 @@
+- name: Deploy application
+  hosts: appserver # Drives both appserver1 and appserver2
+  become: yes # Gain root privileges
+
+  roles:
+    - docker # Ensure Docker is installed
+
+  tasks:
+    - name: Install rsync
+      apt:
+        name: rsync
+        state: present
+        update_cache: yes
+
+    - name: Close Dockerfile and app code
+      synchronize:
+        src: "{{ playbook_dir }}/../" # Variable for microblog
+        dest: /home/deploy/microblog/
+        delete: yes # Delete files not present in source
+        rsync_opts: # Skip unnecessary files
+          - "--exclude=.git"
+          - "--exclude=.venv"
+          - "--exclude=__pycache__"
+          - "--exclude=ansible"
+      become: no # run as deploy user
+
+    - name: Stop and remove old container
+      community.docker.docker_container:
+        name: microblog
+      ignore_errors: yes
+    
+    - name: Remove old image
+      community.docker.docker_image:
+        name: microblog
+        tag: latest
+        state: absent
+      ignore_errors: yes
+
+    - name: Build microblog Docker image
+      community.docker.docker_image: # Build Docker image for microblog app
+        name: microblog # Image name
+        tag: latest 
+        source: build 
+        build: 
+          path: /home/deploy/microblog 
+          dockerfile: docker/Dockerfile # Path to Dockerfile
+          nocache: yes # Do not use cache when building
+        state: present
+        force_source: yes
+
+    - name: Run microblog container # create and start container
+      community.docker.docker_container:
+        name: microblog
+        image: microblog:latest
+        pull: false
+        state: started
+        restart_policy: always
+        env: # Set environment variables for Flask app
+          FLASK_APP: microblog.py 
+          DATABASE_URL: "mysql+pymysql://microblog_user:{{ mysql_password }}@{{ hostvars[groups['database'][0]]['ansible_host'] }}:3306/microblog"
+        ports:
+          - "8000:8000"
