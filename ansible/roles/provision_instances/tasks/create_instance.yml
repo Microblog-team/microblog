@@ -39,8 +39,6 @@
         loop_var: relative_name
     delegate_to: 127.0.0.1
 
-
-
 -   name: Create VM
     azure.azcollection.azure_rm_virtualmachine:
         resource_group: "{{ resource_group }}"
