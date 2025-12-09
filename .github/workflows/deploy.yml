@@ -1,41 +1,46 @@
-name: Deploy to Production
+name: Deploy microblog
 
 on:
+  workflow_call:
   push:
-    tags:
-      - 'v*'
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
-  deploy:
+  build:
+
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - name: Cache pip
+      uses: actions/setup-python@v3
       with:
-        python-version: "3.10"
+        python-version: "3.9"
+        cache: 'pip'
+        cache-dependency-path: |
+          requirements/deploy.txt
+          ansible/requirements.yml
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install ansible azure-mgmt-resource azure-mgmt-compute azure-mgmt-network azure-mgmt-containerservice azure-identity azure-keyvault azure-storage-blob azure-mgmt-dns azure-mgmt-marketplaceordering azure-mgmt-monitor
+        pip install -r requirements/deploy.txt
+        pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+        cd ansible && ansible-galaxy install -r requirements.yml
 
-    - name: Setup SSH
+    - name: Setup SSH 
       shell: bash
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
         eval `ssh-agent -s`
         mkdir -p /home/runner/.ssh/
         touch /home/runner/.ssh/id_rsa
-        echo "$SSH_PRIVATE_KEY" > /home/runner/.ssh/id_rsa
-        chmod 600 /home/runner/.ssh/id_rsa
+        echo -e "${{secrets.SSH_PRIVATE_KEY}}" > /home/runner/.ssh/id_rsa
+        chmod 700 /home/runner/.ssh/id_rsa
 
     - name: Run playbook
+      run: cd ansible/ && ansible-playbook  -i hosts deploy_app.yml  --private-key=/home/runner/.ssh/id_rsa
       env:
         ANSIBLE_HOST_KEY_CHECKING: "False"
-      run: |
-        cd ansible
-        ansible-playbook -i hosts -u deploy deploy_app.yml --private-key=/home/runner/.ssh/id_rsa
