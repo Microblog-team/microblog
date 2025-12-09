@@ -1,4 +1,5 @@
 name: Deploy to Production
+
 on:
   push:
     tags:
@@ -7,26 +8,36 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+        cache: 'pip'
 
-      - name: Install Ansible
-        run: pip install ansible
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible azure-mgmt-resource azure-mgmt-compute azure-mgmt-network azure-mgmt-containerservice azure-identity azure-keyvault azure-storage-blob azure-mgmt-dns azure-mgmt-marketplaceordering azure-mgmt-monitor
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 13.79.234.236 >> ~/.ssh/known_hosts
-          ssh-keyscan -H 52.178.214.74 >> ~/.ssh/known_hosts
+    - name: Setup SSH
+      shell: bash
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        eval `ssh-agent -s`
+        mkdir -p /home/runner/.ssh/
+        touch /home/runner/.ssh/id_rsa
+        # Vi lägger in nyckeln säkert
+        echo "$SSH_PRIVATE_KEY" > /home/runner/.ssh/id_rsa
+        chmod 600 /home/runner/.ssh/id_rsa
 
-      - name: Run Playbook
-        run: |
-          cd ansible
-          ansible-playbook -i hosts -u deploy deploy_app.yml
+    - name: Run playbook
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: "False"
+      run: |
+        cd ansible
+        ansible-playbook -i hosts -u deploy deploy_app.yml --private-key=/home/runner/.ssh/id_rsa
