@@ -16,9 +16,6 @@ loadbalancer ansible_host=13.79.234.254 ansible_user=deploy
 [db_servers]
 db1 ansible_host=13.79.234.246 ansible_user=deploy
 
-; [database_group:children]
-; db_servers
-
 [all_app_servers:children]
 web_servers
 
