@@ -3,19 +3,32 @@
 ansible_python_interpreter: "python3"
 
 region: northeurope
-resource_group: <your resource group> # Change me
-domain_name: <your domain> # Change me
-
-admin_email: <an email>
+resource_group: DIDA-LICH23-DV1673-H25-LP2
+domain_name: microblog-projekt.se
+admin_email: lich23@student.bth.se
 
 vmtags:
-    StudentId: <acronym> # Change me
+    StudentId: lich23
 
 
-pub_ssh_key_location: '<path to you local ssh public key>' # Change me, your local ssh key!
+pub_ssh_key_location: '~/.ssh/id_ed25519.pub' # Local ssh key!
 
 
 server_user: "deploy"
-server_user_pass: "<a password>" # change me
+server_user_pass: 1FhO5bD3Okxh6mtWgbWFhNMWrSQ= # random password generated with: openssl rand -base64 20
 server_user_groups:
     -   sudo
+
+# GitHub usernames for teammembers
+github_users:
+    - vinkeln
+    - jacobLandefjall
+    - kamhaal
+
+# MySQL Configuration
+# Use ansible-valult instead?
+mysql_root_password: hz/Vlw9d2Iv3izQpWV4I4J/QsW/YTNoYahJDBw4UgVI= 
+mysql_password: 6wNVw1QyOlVfk+90XJZ2332NxdbXYv5SOHHRkyUghZM=
+
+# ansible SSH Configuration
+ansible_user: deploy

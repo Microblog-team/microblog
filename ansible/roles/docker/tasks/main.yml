@@ -1,0 +1,61 @@
+# All tasks related to Docker installation and configuration
+- name: Install dependency for Docker
+  apt:
+    name: 
+      - apt-transport-https # Download packages over HTTPS is this still needed?
+      - ca-certificates    # Verify SSL certificates
+      - curl              # Download keys
+      - gnupg            # Verify signatures
+      - lsb-release      # Get Debian version info
+    state: present
+    # update_cache: yes
+
+# Add Docker's official GPG key
+- name: Add Docker's official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg # Docker GPG key URL
+    state: present
+  
+# Set up the Docker stable repository
+- name: Set up the Docker stable repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    state: present
+
+# Install Docker and Docker Compose onto the server
+- name: Install Docker and Docker Compose
+  apt:
+    name:
+    - docker-ce # Docker Engine
+    - docker-ce-cli # Docker CLI
+    - containerd.io # Container runtime
+    - docker-compose-plugin # Docker Compose plugin to manage multi-container applications
+    state: present
+    update_cache: yes
+
+# Install SDK for Python to manage Docker
+- name: Install Docker SDK for Python
+  apt:
+    name: python3-pip
+    state: present
+
+- name: Install Docker Python module
+  pip:
+    name: docker
+    state: present
+    executable: pip3
+
+
+# Ensure Docker service is running
+- name: Ensure Docker service is running
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+# Add deploy user to docker group
+- name: Add deploy user to docker group
+  user:
+    name: "{{ server_user }}"
+    groups: docker
+    append: yes

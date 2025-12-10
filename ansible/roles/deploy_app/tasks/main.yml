@@ -1,0 +1,39 @@
+---
+- name: Install system dependencies
+  apt:
+    name:
+      - python3-pip
+      - python3-venv
+      - git
+    state: present
+    # update_cache: no
+
+- name: Clone Microblog repository
+  git:
+    repo: 'https://github.com/jacobLandefjall/microblog.git'
+    dest: /var/www/microblog
+    version: master
+    force: yes
+
+- name: Install Python dependencies
+  pip:
+    requirements: /var/www/microblog/requirements.txt
+    executable: pip3
+
+
+- name: Install Gunicorn
+  pip:
+    name: gunicorn
+    executable: pip3
+
+- name: Setup Systemd service
+  template:
+    src: microblog.service.j2
+    dest: /etc/systemd/system/microblog.service
+  notify: Restart Microblog
+
+- name: Start Microblog service
+  service:
+    name: microblog
+    state: started
+    enabled: yes

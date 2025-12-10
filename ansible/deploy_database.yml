@@ -1,0 +1,32 @@
+# Create a playbook to deploy a MySQL database using Docker
+
+- name: Deploy MySQL database
+  hosts: database # Drives deployment to database servers
+  become: yes # Gain root privileges
+
+  roles:
+    - docker # Ensure Docker is installed
+  
+  # Creates the folder /var/lib/mysql-data on the server.
+  tasks:
+    - name: Create MySQL data volume directory
+      file:
+        path: /var/lib/mysql-data
+        state: directory
+        mode: '0755' # Set directory permissions (r,w,x for owner)
+
+    - name: Start MySQL container
+      community.docker.docker_container:
+        name: mysql
+        image: mysql:8.0 # Use MySQL version 8.0
+        state: started
+        restart_policy: always # Always restart the container if it stops
+        env: 
+          MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}" # Set root password from variable
+          MYSQL_DATABASE: microblog # Create a database named microblog
+          MYSQL_USER: microblog_user # Create a user named microblog_user
+          MYSQL_PASSWORD: "{{ mysql_password }}" # Set user password from variable
+        ports:
+          - "3306:3306"
+        volumes:
+          - /var/lib/mysql-data:/var/lib/mysql

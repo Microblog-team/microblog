@@ -10,6 +10,7 @@
         update_cache: "True"
         cache_valid_time: 3600
         upgrade: yes
+    ignore_errors: yes
 
 -   name: Install packages
     apt:
@@ -36,13 +37,28 @@
         shell: /bin/bash
         groups: "{{ server_user_groups }}"
 
--   name: Add ssh-key for new user
+-   name: Add ssh-key for new user (from local file)
     authorized_key:
         user: "{{ server_user }}"
         state: present
         key: "{{ lookup('file', item) }}"
     with_items: "{{ pub_ssh_key_location }}"
+    when: pub_ssh_key_location is defined
 
+-   name: Add ssh-keys for all team members (from GitHub)
+    authorized_key:
+        user: "{{ server_user }}"
+        state: present
+        key: "https://github.com/{{ item }}.keys"
+    with_items: "{{ github_users }}"
+    when: github_users is defined
+
+- name: Set ssh keys for regular users from GitHub
+  authorized_key:
+    user: "{{ item.user }}"
+    key: "https://github.com/{{ item.github }}.keys"
+    exclusive: yes
+  loop: "{{ users_to_add }}"
 
 -   name: Add user to sudoers
     lineinfile:

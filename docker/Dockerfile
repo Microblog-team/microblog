@@ -4,18 +4,26 @@ FROM python:3.11-slim
 # Sätt arbetskatalog
 WORKDIR /app
 
-# Installera beroenden
+# Installera system dependencies för MySQL FÖRST
+RUN apt-get update && apt-get install -y \
+    gcc \
+    default-libmysqlclient-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installera Python dependencies
 COPY requirements/prod.txt /tmp/
 RUN pip install --no-cache-dir -r /tmp/prod.txt
 
-# Kopiera in app-koden
-COPY app/ ./app
+# Kopiera HELA applikationen (app/, microblog.py, migrations/, etc)
+COPY . .
 
-# Exponera port för Flask
+# Miljövariabler
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=microblog.py
+
+# Exponera port
 EXPOSE 8000
 
-# Miljövariabler direkt i container (kan även sättas via docker-compose.yml)
-ENV PYTHONUNBUFFERED=1
-
-# Starta Flask-appen
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
+# Kör migrations OCH starta Flask
+CMD flask db upgrade && flask run --host=0.0.0.0 --port=8000
