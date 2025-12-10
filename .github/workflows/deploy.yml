@@ -34,11 +34,12 @@ jobs:
 
 
     - name: Setup SSH
+      shell: bash
       run: |
         mkdir -p ~/.ssh
-        printf "%s\n" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
-        eval $(ssh-agent)
+        eval $(ssh-agent -s)
         ssh-add ~/.ssh/id_ed25519
 
 
