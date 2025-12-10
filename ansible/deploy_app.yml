@@ -14,7 +14,7 @@
 
     - name: Close Dockerfile and app code
       synchronize:
-        src: "{{ playbook_dir }}/../" # Variable for microblog
+        src: "{{ playbook_dir }}/../" #Variable for microblog
         dest: /home/deploy/microblog/
         delete: yes # Delete files not present in source
         rsync_opts: # Skip unnecessary files
