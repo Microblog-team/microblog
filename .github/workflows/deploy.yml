@@ -29,8 +29,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements/deploy.txt
 
-        ansible-galaxy collection install azure.azcollection
-        
+        ansible-galaxy collection install azure.azcollection --force
+
         pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
         cd ansible && ansible-galaxy install -r requirements.yml
 
