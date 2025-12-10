@@ -35,13 +35,12 @@ jobs:
         cd ansible && ansible-galaxy install -r requirements.yml
 
     - name: Setup SSH 
-      shell: bash
-      run: |
-        eval `ssh-agent -s`
-        mkdir -p /home/runner/.ssh/
-        touch /home/runner/.ssh/id_rsa
-        echo -e "${{secrets.SSH_PRIVATE_KEY}}" > /home/runner/.ssh/id_rsa
-        chmod 700 /home/runner/.ssh/id_rsa
+          shell: bash
+          run: |
+            mkdir -p /home/runner/.ssh/
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/.ssh/id_rsa
+            chmod 600 /home/runner/.ssh/id_rsa
+            echo "" >> /home/runner/.ssh/id_rsa
 
     - name: Run playbook
       run: cd ansible/ && ansible-playbook  -i hosts deploy_app.yml  --private-key=/home/runner/.ssh/id_rsa
