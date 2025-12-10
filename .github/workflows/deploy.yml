@@ -35,13 +35,13 @@ jobs:
         cd ansible && ansible-galaxy install -r requirements.yml
 
 
-    - name: Setup SSH 
-      shell: bash
+    - name: Create SSH key
       run: |
-        mkdir -p /home/runner/.ssh/
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/.ssh/id_rsa
-        chmod 600 /home/runner/.ssh/id_rsa
-        echo "" >> /home/runner/.ssh/id_rsa
+        mkdir -p ~/.ssh/
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+
+        
     - name: Run playbook
       run: cd ansible/ && ansible-playbook  -i hosts deploy_app.yml --private-key=/home/runner/.ssh/id_ed25519
       env:
