@@ -37,7 +37,7 @@ jobs:
 
 
       - name: Run Dockle
-        uses: goodwithtech/dockle-action@v0
+        uses: goodwithtech/dockle-action@v1
         with:
           image: microblog:security
           exit-code: 0
