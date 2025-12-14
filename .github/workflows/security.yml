@@ -2,8 +2,7 @@ name: Security Checks
 
 on:
   push:
-    branches: [ "master", "main" ]
-  pull_request:
+    branches: [ "**" ]
     branches: [ "master", "main" ]
 
 permissions:
