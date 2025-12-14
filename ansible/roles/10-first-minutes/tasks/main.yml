@@ -53,6 +53,17 @@
     with_items: "{{ github_users }}"
     when: github_users is defined
 
+- name: Add SSH keys for team and GitHub Actions
+  authorized_key:
+    user: "{{ server_user }}"
+    state: present
+    key: "{{ item }}"
+  loop:
+  #jacobs
+    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC9L+VcTTQUdd6AH7iv6FVTYyTCf58gdzvBbqvdBfYdd2x9pBGmrTaA8PadJlSgWOeJLQlZij1NIRMDpD8WabSbwWQt488NksPEAgq6HnI++J9ziYvD+nP0o3ehTgOpRYKRKdQr+PsMFtkxY/BM6s2V/VObKD0LY9u8TpFzJvs3twu93H6h+QbqVuOYFA0zRt4tgdYbcsyoudL1xOZ3JvhbCp+aZqMttr7yOc+PyAOKHW3LgvOvBACVKOCSU/fSiMZfoAbPWcIw2QZu33UFbtyckhkpoIwaZYohk04/Q5hhNGBMZ/RgvnlKnwV0TG07wX2mniKitQ2zt45L24dIu7hE58IH71Bj1w1ag8PbP4OOsNEcuLG2I2X06LSDKL8fVeFa3pFC2Z2cxp71kz9Qh2oguYVnL+m4OaBYX5er3eBeo0Rkm4AXPjYjPnrZddEhP12Givudri75BOoBHCxjShG9Su9ul7tQhHBHM/3KQWt05Wo8GJa16IgbfEJSIaBv925IjKGbf0UmglyjSKucRON8cT+Qv6HTMD2HVM0Pm2t3wiO88wZsaI/8ePCkzWyyt53M2t9iU71kd3wg+eh00pT2a3b98KasOEqzC5Y8qNGvs7DM7DJ9/Mner3RC7sSGBWEQSBTDxfJFuiTViXzUOKH7TOPeleFabe3/QA8OQXCNyQ=="
+    #Linns
+    - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILpIUQ6zAh0LlxT+mj78C7gwxrodoGMFDhXWLt8B6+rt"
+
 - name: Set ssh keys for regular users from GitHub
   authorized_key:
     user: "{{ item.user }}"
