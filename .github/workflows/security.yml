@@ -41,7 +41,7 @@ jobs:
         with:
           image: microblog:security
           exit-code: 0
-          failure-threshold: WARN
+          exit-level: WARN
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
