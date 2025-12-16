@@ -1,6 +1,7 @@
 ---
--   import_playbook: gather_instances.yml
--   import_playbook: terminate_instances.yml
--   import_playbook: provision_instances.yml
--   import_playbook: gather_instances.yml
--   import_playbook: 10-first-minutes.yml
+#- import_playbook: terminate_instances.yml    # Resta servers
+- import_playbook: provision_instances.yml    # Create servers
+- import_playbook: gather_instances.yml       # Get server IP
+- import_playbook: 10-first-minutes.yml       # Run SSH hardening and basic setup
+- import_playbook: security_groups.yml        # Create security groups
+
