@@ -12,6 +12,13 @@
         state: present
         update_cache: yes
 
+    - name: Create microblog directory
+      file:
+        path: /home/deploy/microblog
+        state: directory
+        owner: deploy
+        group: deploy
+
     - name: Close Dockerfile and app code
       synchronize:
         src: "{{ playbook_dir }}/../" #Variable for microblog
@@ -23,6 +30,9 @@
           - "--exclude=__pycache__"
           - "--exclude=ansible"
       become: no # run as deploy user
+      delegate_to: localhost
+      vars:
+        ansible_user: deploy
 
     - name: Stop and remove old container
       community.docker.docker_container:
@@ -57,6 +67,6 @@
         restart_policy: always
         env: # Set environment variables for Flask app
           FLASK_APP: microblog.py 
-          DATABASE_URL: "mysql+pymysql://microblog_user:{{ mysql_password }}@{{ hostvars[groups['database'][0]]['ansible_host'] }}:3306/microblog"
+          DATABASE_URL: "mysql+pymysql://microblog_user:{{ mysql_password }}@{{ groups['database'][0] }}:3306/microblog"
         ports:
           - "8000:8000"
