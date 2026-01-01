@@ -1,6 +1,8 @@
 ---
 # Here you can add variables that will be available for all hosts.
 ansible_python_interpreter: "python3"
+ansible_user: azureuser
+root_user: azureuser
 
 region: northeurope
 resource_group: DIDA-LICH23-DV1673-H25-LP2
@@ -25,10 +27,19 @@ github_users:
     - jacobLandefjall
     - kamhaal
 
+users_to_add:
+  - user: linn
+    github: vinkeln
+    groups: [sudo]
+  - user: jacob
+    github: jacobLandefjall
+    groups: [sudo]
+  - user: kamran
+    github: kamhaal
+    groups: [sudo]
+
 # MySQL Configuration
 # Use ansible-valult instead?
 mysql_root_password: hz/Vlw9d2Iv3izQpWV4I4J/QsW/YTNoYahJDBw4UgVI= 
 mysql_password: 6wNVw1QyOlVfk+90XJZ2332NxdbXYv5SOHHRkyUghZM=
 
-# ansible SSH Configuration
-ansible_user: deploy

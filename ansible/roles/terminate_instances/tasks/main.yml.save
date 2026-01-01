@@ -1,0 +1,5 @@
+---
+-   include_tasks: remove_instance.yml
+
+-   name: Refresh hosts/inventory to remove old isntance
+    meta: refresh_inventory

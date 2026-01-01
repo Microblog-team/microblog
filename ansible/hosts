@@ -1,28 +1,13 @@
-# Ansible Hosts File
-# Note: Needing a domain name? automatic domain name.
 [local]
 localhost ansible_connection=local
 
-[web_servers]
-appserver1 ansible_host=52.169.19.172 ansible_user=deploy
-appserver2 ansible_host=52.169.18.154 ansible_user=deploy
+[appserver]
 
-[appserver:children]
-web_servers
+[loadbalancer]
 
-[load_balancers]
-loadbalancer ansible_host=52.169.19.245 ansible_user=deploy
-
-[db_servers]
-database ansible_host=52.169.21.208 ansible_user=deploy
-
-[database:children]
-db_servers
-
-[all_app_servers:children]
-web_servers
+[database]
 
 [devops:children]
-web_servers
-load_balancers
-db_servers
+appserver
+loadbalancer
+database
