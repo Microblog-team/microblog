@@ -1,17 +1,24 @@
 [local]
 localhost ansible_connection=local
 
-[appserver]
-appserver1.jalf23devops.me ansible_host=52.169.154.80
-appserver2.jalf23devops.me ansible_host=52.169.154.114
+[local:vars]
+ansible_python_interpreter=/usr/bin/python3
 
-[loadbalancer]
-loadbalancer.jalf23devops.me ansible_host=52.169.154.9
+[appserver]
+appserver1 ansible_host=52.169.22.252
+appserver2 ansible_host=13.74.248.87
 
 [database]
-database.jalf23devops.me ansible_host=52.169.154.52
+database ansible_host=13.74.249.237
+
+[loadbalancer]
+loadbalancer ansible_host=13.74.249.43
 
 [devops:children]
 appserver
-loadbalancer
 database
+loadbalancer
+
+[devops:vars]
+ansible_user=azureuser
+ansible_ssh_private_key_file=~/.ssh/id_ed25519

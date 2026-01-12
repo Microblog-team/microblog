@@ -1,18 +1,15 @@
 ---
 # Here you can add variables that will be available for all hosts.
-ansible_python_interpreter: "python3"
-ansible_user: azureuser
+ansible_python_interpreter: /usr/bin/python3
 root_user: azureuser
 
 region: northeurope
-resource_group: DIDA-LICH23-DV1673-H25-LP2
-domain_name: jalf23devops.me
+resource_group: DIDA-KAHJ23-DV1673-H25-LP2
+domain_name: kahj23devops.com
 admin_email: lich23@student.bth.se
-admin_email: kahj23@student.bth.se
 
 vmtags:
     StudentId: lich23
-    StudentId: kahj23
 
 
 pub_ssh_key_location: '~/.ssh/id_ed25519.pub' # Local ssh key!

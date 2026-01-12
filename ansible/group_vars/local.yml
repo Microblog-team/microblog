@@ -1,3 +1,5 @@
 ---
 # Here you can add variabled that will be available when using host `local`.
-ansible_python_interpreter: /Users/linn/webb/devops/microblog/.venv/bin/python
+# ansible_python_interpreter: /Users/linn/webb/devops/microblog/.venv/bin/python
+
+ansible_python_interpreter: /home/kamar/dbwebb-kurser/devops/microblog/.venv/bin/python
