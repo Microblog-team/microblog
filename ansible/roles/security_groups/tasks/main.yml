@@ -1,12 +1,4 @@
----
-# Hämta alla publika IP-adresser
-- name: Get all public IP addresses from Azure  
-  azure.azcollection.azure_rm_publicipaddress_info:
-    resource_group: "{{ resource_group }}"
-  register: azure_public_ips
-  delegate_to: 127.0.0.1
 
-# Skapa security group för loadbalancer (inga dynamiska IPs behövs)
 - name: Create loadbalancer security group
   azure.azcollection.azure_rm_securitygroup:
     resource_group: "{{ resource_group }}"
@@ -20,7 +12,7 @@
         priority: 1001
         direction: Inbound
         source_address_prefix: '0.0.0.0/0'
-      - name: HTTP-loadbalancer
+      - name: HTTP
         protocol: Tcp
         destination_port_range: 80
         access: Allow
@@ -38,7 +30,6 @@
     state: "{{ state | default('present') }}"
   delegate_to: 127.0.0.1
 
-# Skapa security group för appserver (behöver loadbalancer IP)
 - name: Create appserver security group
   azure.azcollection.azure_rm_securitygroup:
     resource_group: "{{ resource_group }}"
@@ -58,13 +49,11 @@
         access: Allow
         priority: 1002
         direction: Inbound
-        source_address_prefix: "{{ (azure_public_ips.publicipaddresses | selectattr('name', 'search', 'loadbalancer') | first).ip_address }}/32"
+        source_address_prefix: "{{ hostvars[groups['loadbalancer'][0]]['ansible_host'] }}/32"
     tags: "{{ vmtags }}"
     state: "{{ state | default('present') }}"
-  when: azure_public_ips.publicipaddresses | selectattr('name', 'search', 'loadbalancer') | list | length > 0
   delegate_to: 127.0.0.1
 
-# Skapa security group för database (behöver appserver IPs)
 - name: Create database security group
   azure.azcollection.azure_rm_securitygroup:
     resource_group: "{{ resource_group }}"
@@ -84,17 +73,14 @@
         access: Allow
         priority: 1002
         direction: Inbound
-        source_address_prefix: "{{ (azure_public_ips.publicipaddresses | selectattr('name', 'search', 'appserver1') | first).ip_address }}/32"
+        source_address_prefix: "{{ hostvars[groups['appserver'][0]]['ansible_host'] }}/32"
       - name: MYSQL-appserver2
         protocol: Tcp
         destination_port_range: 3306
         access: Allow
         priority: 1003
         direction: Inbound
-        source_address_prefix: "{{ (azure_public_ips.publicipaddresses | selectattr('name', 'search', 'appserver2') | first).ip_address }}/32"
+        source_address_prefix: "{{ hostvars[groups['appserver'][1]]['ansible_host'] }}/32"
     tags: "{{ vmtags }}"
     state: "{{ state | default('present') }}"
-  when: 
-    - azure_public_ips.publicipaddresses | selectattr('name', 'search', 'appserver1') | list | length > 0
-    - azure_public_ips.publicipaddresses | selectattr('name', 'search', 'appserver2') | list | length > 0
   delegate_to: 127.0.0.1
