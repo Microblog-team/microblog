@@ -67,6 +67,6 @@
         restart_policy: always
         env: # Set environment variables for Flask app
           FLASK_APP: microblog.py 
-          DATABASE_URL: "mysql+pymysql://microblog_user:{{ mysql_password }}@{{ groups['database'][0] }}:3306/microblog"
+          DATABASE_URL: "mysql+pymysql://microblog_user:{{ mysql_password }}@{{ hostvars[groups['database'][0]]['ansible_host'] }}:3306/microblog"
         ports:
           - "8000:8000"

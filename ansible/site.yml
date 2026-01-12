@@ -3,6 +3,7 @@
 - import_playbook: provision_instances.yml    # Create servers
 - import_playbook: gather_instances.yml       # Get server IP
 - import_playbook: security_groups.yml        # Create security groups
+- import_playbook: update_dns.yml            # Update DNS records
 - import_playbook: 10-first-minutes.yml       # Run SSH hardening and basic setup
 - import_playbook: deploy_database.yml      # Deploy database server
 - import_playbook: deploy_app.yml            # Deploy application servers

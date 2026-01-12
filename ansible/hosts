@@ -2,10 +2,14 @@
 localhost ansible_connection=local
 
 [appserver]
+appserver1.jalf23devops.me ansible_host=52.169.154.80
+appserver2.jalf23devops.me ansible_host=52.169.154.114
 
 [loadbalancer]
+loadbalancer.jalf23devops.me ansible_host=52.169.154.9
 
 [database]
+database.jalf23devops.me ansible_host=52.169.154.52
 
 [devops:children]
 appserver

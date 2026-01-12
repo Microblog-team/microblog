@@ -6,7 +6,7 @@ root_user: azureuser
 
 region: northeurope
 resource_group: DIDA-LICH23-DV1673-H25-LP2
-domain_name: microblog-projekt.se
+domain_name: jalf23devops.me
 admin_email: lich23@student.bth.se
 
 vmtags:
