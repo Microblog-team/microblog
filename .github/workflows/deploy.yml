@@ -33,7 +33,7 @@ jobs:
         cd ansible && ansible-galaxy install -r requirements.yml
 
 
-    - name: Setup SSH 
+    - name: Setup  SSH 
       shell: bash
       run: |
         mkdir -p /home/runner/.ssh/
