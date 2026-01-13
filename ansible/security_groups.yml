@@ -1,0 +1,17 @@
+---
+- name: Gather facts from all hosts first
+  hosts: all
+  gather_facts: true
+  ignore_unreachable: true
+  ignore_errors: true
+
+- name: Configure Security Groups
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars_files:
+    - group_vars/all.yml
+  
+  roles:
+    - security_groups # Call the security_groups role to set up SGs as defined in vars/main.yml

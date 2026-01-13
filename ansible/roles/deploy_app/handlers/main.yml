@@ -1,6 +1,0 @@
----
-- name: Restart Microblog
-  service:
-    name: microblog
-    state: restarted
-    daemon_reload: yes

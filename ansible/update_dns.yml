@@ -1,0 +1,69 @@
+---
+- name: Update DNS records automatically with dynamic IPs
+  hosts: local
+  gather_facts: False
+  collections:
+    - azure.azcollection
+  
+  tasks:
+    - name: Get all public IP addresses from our VMs
+      azure_rm_publicipaddress_info:
+        resource_group: "{{ resource_group }}"
+      register: public_ips
+
+    - name: Display found IPs for debugging
+      debug:
+        msg: "Found {{ public_ips.publicipaddresses | length }} public IP addresses"
+
+    - name: Update DNS A record for appserver1
+      azure_rm_dnsrecordset:
+        resource_group: "{{ resource_group }}"
+        zone_name: "{{ domain_name }}"
+        relative_name: "appserver1"
+        record_type: A
+        state: present
+        records:
+          - entry: "{{ (public_ips.publicipaddresses | selectattr('name', 'search', 'appserver1') | first).ip_address }}"
+      when: public_ips.publicipaddresses | selectattr('name', 'search', 'appserver1') | list | length > 0
+
+    - name: Update DNS A record for appserver2
+      azure_rm_dnsrecordset:
+        resource_group: "{{ resource_group }}"
+        zone_name: "{{ domain_name }}"
+        relative_name: "appserver2"
+        record_type: A
+        state: present
+        records:
+          - entry: "{{ (public_ips.publicipaddresses | selectattr('name', 'search', 'appserver2') | first).ip_address }}"
+      when: public_ips.publicipaddresses | selectattr('name', 'search', 'appserver2') | list | length > 0
+
+    - name: Update DNS A record for loadbalancer
+      azure_rm_dnsrecordset:
+        resource_group: "{{ resource_group }}"
+        zone_name: "{{ domain_name }}"
+        relative_name: "loadbalancer"
+        record_type: A
+        state: present
+        records:
+          - entry: "{{ (public_ips.publicipaddresses | selectattr('name', 'search', 'loadbalancer') | first).ip_address }}"
+      when: public_ips.publicipaddresses | selectattr('name', 'search', 'loadbalancer') | list | length > 0
+
+    - name: Update DNS A record for database
+      azure_rm_dnsrecordset:
+        resource_group: "{{ resource_group }}"
+        zone_name: "{{ domain_name }}"
+        relative_name: "database"
+        record_type: A
+        state: present
+        records:
+          - entry: "{{ (public_ips.publicipaddresses | selectattr('name', 'search', 'database') | first).ip_address }}"
+      when: public_ips.publicipaddresses | selectattr('name', 'search', 'database') | list | length > 0
+
+    - name: Show DNS records created
+      debug:
+        msg: 
+          - "DNS records created/updated successfully!"
+          - "appserver1.{{ domain_name }}"
+          - "appserver2.{{ domain_name }}"
+          - "loadbalancer.{{ domain_name }}"
+          - "database.{{ domain_name }}"

@@ -1,5 +1,9 @@
 ---
--   include_tasks: remove_instance.yml
+-   name: Remove each instance
+    include_tasks: remove_instance.yml
+    loop: "{{ groups['all'] }}"
+    loop_control:
+        loop_var: iname
 
--   name: Refresh hosts/inventory to remove old isntance
+-   name: Refresh hosts/inventory to remove old instance
     meta: refresh_inventory
