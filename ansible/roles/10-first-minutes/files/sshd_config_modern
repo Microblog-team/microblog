@@ -1,0 +1,42 @@
+# Modern OpenSSH server configuration (OpenSSH 6.7+)
+# https://infosec.mozilla.org/guidelines/openssh
+
+# Supported HostKey algorithms by order of preference.
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+
+# Specifies the available KEX (Key Exchange) algorithms.
+KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+
+# Specifies the ciphers allowed for protocol version 2.
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+
+# Specifies the available MAC (message authentication code) algorithms.
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+
+# LogLevel VERBOSE logs user's key fingerprint on login.
+LogLevel VERBOSE
+
+# Use kernel sandbox mechanisms where possible in unprivileged processes
+UsePrivilegeSeparation sandbox
+
+# Authentication
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+
+# ✅ VIKTIGT: Lägg till dina användare här!
+AllowUsers deploy
+
+# SFTP subsystem
+Subsystem sftp /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO
+
+# Disconnect idle sessions
+ClientAliveInterval 300
+ClientAliveCountMax 2
