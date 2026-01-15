@@ -90,21 +90,28 @@
     loop: "{{ users_to_add }}"
     when: users_to_add is defined
 
--   name: Disallow root and password ssh access
-    lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-        state: present
-        validate: '/usr/sbin/sshd -T -f %s' # kan få fel med line "PermitRootLogin testing"
-    with_items:
-        - regexp: "^PasswordAuthentication"
-          line: "PasswordAuthentication no"
-        - regexp: "^PermitRootLogin"
-          line: "PermitRootLogin no"
+-   # Backup old SSH config
+-   name: Backup existing SSH config
+    copy:
+        src: /etc/ssh/sshd_config
+        dest: /etc/ssh/sshd_config.backup
+        remote_src: yes
+        mode: '0600'
+    ignore_errors: yes
+
+# Copy Modern SSH configuration
+-   name: Copy Modern OpenSSH configuration
+    copy:
+        src: files/sshd_config_modern
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: '0600'
+        validate: '/usr/sbin/sshd -T -f %s'
     notify: restart ssh
 
--   name: Allow all users to ssh
+# Update AllowUsers with all team members
+-   name: Update AllowUsers in SSH config
     lineinfile:
         path: /etc/ssh/sshd_config
         regexp: "^AllowUsers"
@@ -113,7 +120,6 @@
         validate: '/usr/sbin/sshd -T -f %s'
     when: users_to_add is defined
     notify: restart ssh
-
 -   name: flush handlers to restart SSH
     meta: flush_handlers # we cant do it later because after this we cant ssh as root
 

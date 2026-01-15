@@ -10,3 +10,13 @@
 - import_playbook: deploy_lb.yml             # Deploy load balancer
 
 
+
+- import_playbook: gather_instances.yml      
+- import_playbook: terminate_instances.yml   
+- import_playbook: provision_instances.yml   
+
+- import_playbook: gather_instances.yml      
+
+- import_playbook: security_groups.yml       
+
+- import_playbook: 10-first-minutes.yml      
