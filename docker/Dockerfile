@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
 
 # Installera Python dependencies
 COPY requirements/prod.txt /tmp/
+RUN pip install --upgrade setuptools
 RUN pip install --no-cache-dir -r /tmp/prod.txt
 
 # Kopiera HELA applikationen (app/, microblog.py, migrations/, etc)
