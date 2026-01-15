@@ -1,3 +1,15 @@
+# Remove broken backports repository
+- name: Remove bullseye-backports repository
+  lineinfile:
+    path: /etc/apt/sources.list
+    regexp: '.*bullseye-backports.*'
+    state: absent
+
+- name: Update apt cache after removing backports
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
 # All tasks related to Docker installation and configuration
 - name: Install dependency for Docker
   apt:

@@ -12,6 +12,13 @@
         state: present
         update_cache: yes
 
+    - name: Create microblog directory
+      file:
+        path: /home/deploy/microblog
+        state: directory
+        owner: deploy
+        group: deploy
+
     - name: Close Dockerfile and app code
       synchronize:
         src: "{{ playbook_dir }}/../" #Variable for microblog
@@ -23,6 +30,9 @@
           - "--exclude=__pycache__"
           - "--exclude=ansible"
       become: no # run as deploy user
+      delegate_to: localhost
+      vars:
+        ansible_user: deploy
 
     - name: Stop and remove old container
       community.docker.docker_container:

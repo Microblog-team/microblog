@@ -1,13 +1,13 @@
 ---
--   name: Set root password
-    user:
-        name: root
-        password: "{{ root_password }}"
+#-   name: Set root password
+    #user:
+       # name: root
+        #password: "{{ root_password | password_hash('sha512') }}"
 
 -   name: Update apt-cache and upgrade
     apt:
         force_apt_get: yes
-        update_cache: "True"
+        update_cache: yes
         cache_valid_time: 3600
         upgrade: yes
     ignore_errors: yes
@@ -32,7 +32,6 @@
 -   name: Create user
     user:
         name: "{{ server_user }}"
-        password: "{{ server_user_pass }}"
         state: present
         shell: /bin/bash
         groups: "{{ server_user_groups }}"
@@ -53,23 +52,25 @@
     with_items: "{{ github_users }}"
     when: github_users is defined
 
-- name: Add SSH keys for team and GitHub Actions
-  authorized_key:
-    user: "{{ server_user }}"
-    state: present
-    key: "{{ item }}"
-  loop:
-  #jacobs
-    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC9L+VcTTQUdd6AH7iv6FVTYyTCf58gdzvBbqvdBfYdd2x9pBGmrTaA8PadJlSgWOeJLQlZij1NIRMDpD8WabSbwWQt488NksPEAgq6HnI++J9ziYvD+nP0o3ehTgOpRYKRKdQr+PsMFtkxY/BM6s2V/VObKD0LY9u8TpFzJvs3twu93H6h+QbqVuOYFA0zRt4tgdYbcsyoudL1xOZ3JvhbCp+aZqMttr7yOc+PyAOKHW3LgvOvBACVKOCSU/fSiMZfoAbPWcIw2QZu33UFbtyckhkpoIwaZYohk04/Q5hhNGBMZ/RgvnlKnwV0TG07wX2mniKitQ2zt45L24dIu7hE58IH71Bj1w1ag8PbP4OOsNEcuLG2I2X06LSDKL8fVeFa3pFC2Z2cxp71kz9Qh2oguYVnL+m4OaBYX5er3eBeo0Rkm4AXPjYjPnrZddEhP12Givudri75BOoBHCxjShG9Su9ul7tQhHBHM/3KQWt05Wo8GJa16IgbfEJSIaBv925IjKGbf0UmglyjSKucRON8cT+Qv6HTMD2HVM0Pm2t3wiO88wZsaI/8ePCkzWyyt53M2t9iU71kd3wg+eh00pT2a3b98KasOEqzC5Y8qNGvs7DM7DJ9/Mner3RC7sSGBWEQSBTDxfJFuiTViXzUOKH7TOPeleFabe3/QA8OQXCNyQ=="
-    #Linns
-    - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILpIUQ6zAh0LlxT+mj78C7gwxrodoGMFDhXWLt8B6+rt"
+-   name: Create individual user accounts for team members
+    user:
+        name: "{{ item.user }}"
+        state: present
+        shell: /bin/bash
+        groups: "{{ item.groups | default([]) }}"
+        create_home: yes
+    loop: "{{ users_to_add }}"
+    when: users_to_add is defined
 
 - name: Set ssh keys for regular users from GitHub
   authorized_key:
     user: "{{ item.user }}"
     key: "https://github.com/{{ item.github }}.keys"
-    exclusive: yes
+    exclusive: no # Behåller andra SSH-nycklar, tar inte bort dem
   loop: "{{ users_to_add }}"
+  when: 
+      - users_to_add is defined
+      - item.github is defined
 
 -   name: Add user to sudoers
     lineinfile:
@@ -79,36 +80,56 @@
         state: present
         validate: '/usr/sbin/visudo -cf %s' # kan få fel med line "{{ server_user }} testing"
 
--   name: Disallow root and password ssh access
+-   name: Add individual users to sudoers
     lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
+        dest: /etc/sudoers
+        regexp: "^{{ item.user }} ALL"
+        line: "{{ item.user }} ALL=(ALL) NOPASSWD:ALL"
         state: present
-        validate: '/usr/sbin/sshd -T -f %s' # kan få fel med line "PermitRootLogin testing"
-    with_items:
-        - regexp: "^PasswordAuthentication"
-          line: "PasswordAuthentication no"
-        - regexp: "^PermitRootLogin"
-          line: "PermitRootLogin no"
+        validate: '/usr/sbin/visudo -cf %s'
+    loop: "{{ users_to_add }}"
+    when: users_to_add is defined
+
+-   # Backup old SSH config
+-   name: Backup existing SSH config
+    copy:
+        src: /etc/ssh/sshd_config
+        dest: /etc/ssh/sshd_config.backup
+        remote_src: yes
+        mode: '0600'
+    ignore_errors: yes
+
+# Copy Modern SSH configuration
+-   name: Copy Modern OpenSSH configuration
+    copy:
+        src: files/sshd_config_modern
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: '0600'
+        validate: '/usr/sbin/sshd -T -f %s'
     notify: restart ssh
 
--   name: flush handlers to restart SSH
-    meta: flush_handlers # we cant do it later because after this we cant ssh as root
-
--   name: Only allow user to ssh
+# Update AllowUsers with all team members
+-   name: Update AllowUsers in SSH config
     lineinfile:
         path: /etc/ssh/sshd_config
         regexp: "^AllowUsers"
-        line: "AllowUsers {{ server_user }}"
+        line: "AllowUsers {{ server_user }} {{ root_user | default('azureuser') }} {{ users_to_add | map(attribute='user') | join(' ') }}"
         state: present
+        validate: '/usr/sbin/sshd -T -f %s'
+    when: users_to_add is defined
+    notify: restart ssh
+-   name: flush handlers to restart SSH
+    meta: flush_handlers # we cant do it later because after this we cant ssh as root
+
     # ignore_errors: yes
 
--   name: Remove default user
-    remote_user: "{{ server_user }}"
-    user:
-        name: azureuser
-        state: absent
-        force: yes
-        remove: yes
+-   #name: Remove default user
+    #remote_user: "{{ server_user }}"
+    #user:
+        #name: azureuser
+        #state: absent
+        #force: yes
+        #remove: yes
     # ignore_errors: yes

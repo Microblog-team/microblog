@@ -8,37 +8,42 @@ sg_groups:
             access: Allow
             priority: 1001
             direction: Inbound
-            source_address_prefix: '0.0.0.0/0'
-        -   name: HTTP
+            source_address_prefix: '0.0.0.0/0' # Allow SSH for all
+
+        -   name: HTTP-loadbalancer
             protocol: Tcp
             destination_port_range: 80
             access: Allow
             priority: 1002
             direction: Inbound
-            source_address_prefix: '0.0.0.0/0'
+            source_address_prefix: '0.0.0.0/0' # Allow HTTP for all
+
         -   name: HTTPS
             protocol: Tcp
             destination_port_range: 443
             access: Allow
             priority: 1003
             direction: Inbound
-            source_address_prefix: '0.0.0.0/0'
+            source_address_prefix: '0.0.0.0/0' # Allow HTTPS for all
+
     -   name: appserver
         port_rules:
-        -   name: APP
+        -   name: SSH
             protocol: Tcp
             destination_port_range: 22
             access: Allow
             priority: 1001
             direction: Inbound
-            source_address_prefix: '0.0.0.0/0'
-        -   name: HTTP
+            source_address_prefix: '0.0.0.0/0' # Allow SSH for all
+
+        -   name: HTTP-from-loadbalancer
             protocol: Tcp
             destination_port_range: 8000
             access: Allow
             priority: 1002
             direction: Inbound
-            source_address_prefix: '0.0.0.0/0'
+            source_address_prefix: "{{ groups['loadbalancer'][0]}}/32" # Allow HTTP only from load balancer
+
     -   name: database
         port_rules:
         -   name: SSH
@@ -47,18 +52,20 @@ sg_groups:
             access: Allow
             priority: 1001
             direction: Inbound
-            source_address_prefix: '0.0.0.0/0'
+            source_address_prefix: '0.0.0.0/0' # Allow SSH for all
+
         -   name: MYSQL-appserver1
             protocol: Tcp
             destination_port_range: 3306
             access: Allow
             priority: 1002
             direction: Inbound
-            source_address_prefix: "{{ hostvars['appserver1']['ansible_host'] }}/32"
+            source_address_prefix: "{{ groups['appserver'][0] }}/32" # Allow MySQL only from appserver1
+            
         -   name: MYSQL-appserver2
             protocol: Tcp
             destination_port_range: 3306
             access: Allow
             priority: 1003
             direction: Inbound
-            source_address_prefix: "{{ hostvars['appserver2']['ansible_host'] }}/32"
+            source_address_prefix: "{{ groups['appserver'][1] }}/32" # Allow MySQL only from appserver2
