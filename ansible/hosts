@@ -1,6 +1,7 @@
 [local]
 localhost ansible_connection=local
 
+<<<<<<< HEAD
 [local:vars]
 ansible_python_interpreter=/usr/bin/python3
 
@@ -13,6 +14,17 @@ database ansible_host=13.74.249.237
 
 [loadbalancer]
 loadbalancer ansible_host=13.74.249.43
+=======
+[appserver]
+appserver1.jalfdevops.me ansible_host=52.169.154.80
+appserver2.jalfdevops.me ansible_host=52.169.154.114
+
+[loadbalancer]
+loadbalancer.jalfdevops.me ansible_host=52.169.154.9
+
+[database]
+database.jalfdevops.me ansible_host=52.169.154.52
+>>>>>>> kmom03/security-ops
 
 [devops:children]
 appserver

@@ -123,7 +123,7 @@
 -   name: flush handlers to restart SSH
     meta: flush_handlers # we cant do it later because after this we cant ssh as root
 
-    # ignore_errors: yes
+    # ignore_errors: yes§
 
 -   #name: Remove default user
     #remote_user: "{{ server_user }}"
