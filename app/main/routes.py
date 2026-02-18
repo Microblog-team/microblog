@@ -132,4 +132,5 @@ def version():
     """
     Route for checking app version
     """
-    return {'version': '1.0.0'}
+    return {'version': '1.0.0'}'
+    
