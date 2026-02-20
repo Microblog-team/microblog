@@ -1,0 +1,9 @@
+---
+- import_playbook: gather_instances.yml
+
+- name: Deploy monitoring
+  hosts: monitoring
+  become: yes
+  roles:
+    - docker
+    - monitoring

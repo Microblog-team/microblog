@@ -1,0 +1,11 @@
+---
+prometheus_version: "v2.45.0"
+grafana_version: "8.2.4"
+alertmanager_version: "v0.24.0"
+
+prometheus_port: 9090
+grafana_port: 3000
+alertmanager_port: 9093
+
+prometheus_data_path: /opt/prometheus_data
+grafana_data_path: /opt/grafana_data

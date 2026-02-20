@@ -1,0 +1,68 @@
+---
+- name: Create prometheus data directory
+  file:
+    path: "{{ prometheus_data_path }}"
+    state: directory
+    mode: '0777'
+
+- name: Create grafana data directory
+  file:
+    path: "{{ grafana_data_path }}"
+    state: directory
+    mode: '0777'
+
+- name: Copy prometheus config
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/prometheus.yml
+
+- name: Run Node Exporter
+  docker_container:
+    name: node_exporter
+    image: "prom/node-exporter:v1.2.2"
+    restart_policy: unless-stopped
+    ports:
+      - "9100:9100"
+
+- name: Run Prometheus
+  docker_container:
+    name: prometheus
+    image: "prom/prometheus:{{ prometheus_version }}"
+    restart_policy: unless-stopped
+    ports:
+      - "{{ prometheus_port }}:9090"
+    volumes:
+      - /opt/prometheus.yml:/etc/prometheus/prometheus.yml
+      - "{{ prometheus_data_path }}:/prometheus_data"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus_data'
+
+- name: Run Grafana
+  docker_container:
+    name: grafana
+    image: "grafana/grafana:{{ grafana_version }}"
+    restart_policy: unless-stopped
+    ports:
+      - "{{ grafana_port }}:3000"
+    volumes:
+      - "{{ grafana_data_path }}:/var/lib/grafana"
+
+- name: Run Alertmanager
+  docker_container:
+    name: alertmanager
+    image: "prom/alertmanager:{{ alertmanager_version }}"
+    restart_policy: unless-stopped
+    ports:
+      - "{{ alertmanager_port }}:9093"
+
+- name: Add Prometheus as Grafana datasource
+  grafana_datasource:
+    grafana_url: "http://localhost:{{ grafana_port }}"
+    grafana_user: admin
+    grafana_password: admin
+    name: Prometheus
+    ds_type: prometheus
+    ds_url: "http://localhost:{{ prometheus_port }}"
+    is_default: true
+    state: present
