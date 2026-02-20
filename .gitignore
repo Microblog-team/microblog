@@ -115,3 +115,7 @@ docker.txt
 
 # commits.txt
 commits.txt
+
+# prometheus
+prometheus_data/
+grafana_data/
