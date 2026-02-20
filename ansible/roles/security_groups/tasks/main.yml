@@ -84,3 +84,41 @@
     tags: "{{ vmtags }}"
     state: "{{ state | default('present') }}"
   delegate_to: 127.0.0.1
+
+- name: Create monitoring security group
+  azure.azcollection.azure_rm_securitygroup:
+    resource_group: "{{ resource_group }}"
+    name: "monitoring-sg"
+    purge_rules: yes
+    rules:
+      - name: SSH
+        protocol: Tcp
+        destination_port_range: 22
+        access: Allow
+        priority: 1001
+        direction: Inbound
+        source_address_prefix: '0.0.0.0/0'
+      - name: Prometheus
+        protocol: Tcp
+        destination_port_range: 9090
+        access: Allow
+        priority: 1002
+        direction: Inbound
+        source_address_prefix: '0.0.0.0/0'
+      - name: Grafana
+        protocol: Tcp
+        destination_port_range: 3000
+        access: Allow
+        priority: 1003
+        direction: Inbound
+        source_address_prefix: '0.0.0.0/0'
+      - name: Alertmanager
+        protocol: Tcp
+        destination_port_range: 9093
+        access: Allow
+        priority: 1004
+        direction: Inbound
+        source_address_prefix: '0.0.0.0/0'
+    tags: "{{ vmtags }}"
+    state: "{{ state | default('present') }}"
+  delegate_to: 127.0.0.1
