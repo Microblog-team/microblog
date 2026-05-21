@@ -133,3 +133,29 @@ def version():
     Route for checking app version
     """
     return {'version': '1.0.0'}
+
+
+@bp.route('/test-error')
+def test_error():
+    """
+    Test route that generates an error for monitoring demonstration
+    This helps verify that error tracking and alerting is working correctly
+    """
+    from app.monitoring import record_error
+    
+    current_app.logger.warning("Test error route triggered - simulating application error")
+    
+    # Simulate a real error
+    error_msg = "Simulated database connection error - Testing monitoring system"
+    record_error("DatabaseError", error_msg, endpoint="test_error")
+    
+    # Return response
+    return {
+        'status': 'error_test',
+        'message': 'Error has been logged and alert sent to webhook.site',
+        'timestamp': datetime.utcnow().isoformat()
+    }, 200
+
+@bp.route('/fail')
+def fail():
+    raise Exception("Test error for monitoring")
