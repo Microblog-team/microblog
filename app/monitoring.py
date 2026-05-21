@@ -157,7 +157,7 @@ def init_monitoring(app):
     #     record_error(error_type, error_message, endpoint)
         
     #     # Re-raise the error so Flask handles it normally
-    #     raise
+    ##     raise
 
     @app.errorhandler(Exception)
     def handle_exception(error):
