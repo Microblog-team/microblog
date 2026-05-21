@@ -1,0 +1,10 @@
+groups:
+  - name: microblog-alerts
+    rules:
+      - alert: MicroblogErrorDetected
+        expr: microblog_errors_total > 0
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Microblog error detected"

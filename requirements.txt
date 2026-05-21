@@ -1,3 +1,8 @@
 -r requirements/prod.txt
 gunicorn >= 19.9.0
 pymysql >= 0.9.3
+wheel>=0.46.2
+prometheus-client>=0.16.0
+requests>=2.28.0
+Werkzeug==3.0.3
+setuptools>=68

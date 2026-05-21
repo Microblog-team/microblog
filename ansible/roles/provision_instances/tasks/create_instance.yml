@@ -24,20 +24,20 @@
         security_group: "{{ itype }}-sg"
         tags: "{{ vmtags }}"
 
--   name: Ensure "A" records for loadbalancer
-    azure.azcollection.azure_rm_dnsrecordset:
-        resource_group: "{{ resource_group }}"
-        relative_name: "{{ relative_name.name }}"
-        zone_name: "{{ domain_name }}"
-        record_type: A
-        state: present
-        records:
-            - entry: "{{ output_ip_address.state.ip_address }}"
-    when: iname == 'loadbalancer'
-    loop: "{{ relative_names }}"
-    loop_control: 
-        loop_var: relative_name
-    delegate_to: 127.0.0.1
+# -   name: Ensure "A" records for loadbalancer
+#     azure.azcollection.azure_rm_dnsrecordset:
+#         resource_group: "{{ resource_group }}"
+#         relative_name: "{{ relative_name.name }}"
+#         zone_name: "{{ domain_name }}"
+#         record_type: A
+#         state: present
+#         records:
+#             - entry: "{{ output_ip_address.state.ip_address }}"
+#     when: iname == 'loadbalancer'
+#     loop: "{{ relative_names }}"
+#     loop_control: 
+#         loop_var: relative_name
+#     delegate_to: 127.0.0.1
 
 -   name: Create VM
     azure.azcollection.azure_rm_virtualmachine:

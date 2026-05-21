@@ -44,6 +44,14 @@ sg_groups:
             direction: Inbound
             source_address_prefix: "{{ groups['loadbalancer'][0]}}/32" # Allow HTTP only from load balancer
 
+        -   name: Metrics
+            protocol: Tcp
+            destination_port_range: 8000
+            access: Allow
+            priority: 1003
+            direction: Inbound
+            source_address_prefix: '0.0.0.0/0'
+            
     -   name: database
         port_rules:
         -   name: SSH
@@ -69,3 +77,46 @@ sg_groups:
             priority: 1003
             direction: Inbound
             source_address_prefix: "{{ groups['appserver'][1] }}/32" # Allow MySQL only from appserver2
+
+
+    -   name: monitoring
+        port_rules:
+        -   name: SSH
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 1001
+            direction: Inbound
+            source_address_prefix: '0.0.0.0/0'
+
+        -   name: HTTP-monitoring
+            protocol: Tcp
+            destination_port_range: 80
+            access: Allow
+            priority: 1002
+            direction: Inbound
+            source_address_prefix: '0.0.0.0/0'
+
+        -   name: Grafana
+            protocol: Tcp
+            destination_port_range: 3000
+            access: Allow
+            priority: 1003
+            direction: Inbound
+            source_address_prefix: '0.0.0.0/0'
+
+        -   name: Prometheus
+            protocol: Tcp
+            destination_port_range: 9090
+            access: Allow
+            priority: 1004
+            direction: Inbound
+            source_address_prefix: '0.0.0.0/0'
+
+        -   name: Alertmanager
+            protocol: Tcp
+            destination_port_range: 9093
+            access: Allow
+            priority: 1005
+            direction: Inbound
+            source_address_prefix: '0.0.0.0/0'

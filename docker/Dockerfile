@@ -1,7 +1,7 @@
 # Basimage
 FROM python:3.11-slim
 
-# Sätt arbetskatalog
+# Sätt arbetskatalo
 WORKDIR /app
 
 # Installera system dependencies för MySQL FÖRST

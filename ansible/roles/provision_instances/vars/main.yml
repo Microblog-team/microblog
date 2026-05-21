@@ -8,9 +8,12 @@ instances:
       type: database
     - name: loadbalancer
       type: loadbalancer
+    - name: monitoring
+      type: monitoring
 
 relative_names:
     - name: www # www.<domain>
     - name: "@" # so <domain> works as a URL. Otherwise only www.<domain> would work.
     - name: appserver1 # subdomain for appserver1
     - name: appserver2 # subdomain for appserver2
+    - name: monitoring # subdomain for monitoring

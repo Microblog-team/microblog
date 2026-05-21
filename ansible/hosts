@@ -5,8 +5,9 @@ localhost ansible_connection=local
 ansible_python_interpreter=/usr/bin/python3
 
 [appserver]
-appserver1.jalfdevops.me ansible_host=52.169.154.80
-appserver2.jalfdevops.me ansible_host=52.169.154.114
+[appservers]
+appserver1.jalfdevops.me ansible_host=52.169.22.252 ansible_user=azureuser
+appserver2.jalfdevops.me ansible_host=13.74.248.87 ansible_user=azureuser
 
 [loadbalancer]
 loadbalancer.jalfdevops.me ansible_host=52.169.154.9
