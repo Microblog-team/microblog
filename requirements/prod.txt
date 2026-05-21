@@ -14,3 +14,4 @@ cryptography
 wheel>=0.46.2
 prometheus-client==0.20.0
 requests==2.31.0
+setuptools>=68
