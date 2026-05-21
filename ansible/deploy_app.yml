@@ -34,17 +34,15 @@
       vars:
         ansible_user: deploy
 
-    - name: Stop and remove old container
-      community.docker.docker_container:
-        name: microblog
+    - name: Force kill all running containers (Cleanup)
+      shell: "docker rm -f $(docker ps -aq) || true"
       ignore_errors: yes
-    
-    - name: Remove old image
-      community.docker.docker_image:
-        name: microblog
-        tag: latest
-        state: absent
+      become: yes
+
+    - name: Prune old images
+      shell: "docker system prune -af || true"
       ignore_errors: yes
+      become: yes
 
     - name: Build microblog Docker image
       community.docker.docker_image: # Build Docker image for microblog app
