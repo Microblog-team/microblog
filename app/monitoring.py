@@ -7,6 +7,7 @@ import os
 import requests
 from prometheus_client import Counter, Histogram, Gauge
 from flask import request, current_app
+from werkzeug.exceptions import HTTPException
 from datetime import datetime
 import traceback
 
@@ -144,20 +145,33 @@ def init_monitoring(app):
         
         return response
     
-    @app.errorhandler(Exception)
-    def handle_error(error):
-        """
-        Global error handler - catches all unhandled exceptions
-        """
-        error_type = type(error).__name__
-        error_message = str(error)
-        endpoint = request.endpoint or 'unknown'
+    # @app.errorhandler(Exception)
+    # def handle_error(error):
+    #     """
+    #     Global error handler - catches all unhandled exceptions
+    #     """
+    #     error_type = type(error).__name__
+    #     error_message = str(error)
+    #     endpoint = request.endpoint or 'unknown'
         
-        record_error(error_type, error_message, endpoint)
+    #     record_error(error_type, error_message, endpoint)
         
-        # Re-raise the error so Flask handles it normally
-        raise
+    #     # Re-raise the error so Flask handles it normally
+    #     raise
 
+    @app.errorhandler(Exception)
+    def handle_exception(error):
+        if isinstance(error, HTTPException):
+            return error
+
+        endpoint = request.endpoint or "unknown"
+        record_error(
+            error_type=type(error).__name__,
+            error_message=str(error),
+            endpoint=endpoint,
+        )
+
+        return "An unexpected error has occurred", 500
 
 def record_db_operation(operation: str, status: str = 'success'):
     """
