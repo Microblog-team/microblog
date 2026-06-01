@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-kamar
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: 96dilo@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-kamar-key
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
