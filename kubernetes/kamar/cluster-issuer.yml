@@ -5,7 +5,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: 96dilo@gmail.com
+    email: kahj23@student.bth.se
     privateKeySecretRef:
       name: letsencrypt-kamar-key
     solvers:
